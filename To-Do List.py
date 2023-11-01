@@ -58,23 +58,26 @@ while True:
 
             completetion_message = f"the task: '{completed_todo}' was completed, and removed from list"
             print(completetion_message)
+            
+        # clearing the to-do list
+        case "clear all":
+            # Clear the in-memory list
+            todo_list.clear()
+    
+            # Clear the content of the file
+            with open("todos.txt", "w") as file:
+                file.truncate(0)
+    
+                print("To-do list cleared")
+
+            with open("todos.txt" , "w") as file:
+                file.writelines(todo_list)
 
         # exit the loop, completing the list
         case "exit" | "finish":
             break
         
-        # clearing the to-do list
-        case "clear all":
-            with open("todos.txt" , "r") as file:
-                file.readlines()
-                todo_list.clear()
-
-                print("to-do list cleared")
-
-            with open("todos.txt" , "w") as file:
-                file.writelines(todo_list)
-
+        
         # invalid commands
         case _:
             print("invalid request")
-print ("nihar")
