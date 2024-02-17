@@ -4,34 +4,33 @@ while True:
     user_action = user_action.strip()
     user_action = user_action.lower()
 
-    match user_action:
+    # add an item to the list
+    if user_action.startswith("add") or user_action.startswith("new"):
+        todo_input = user_action[4:]
+        
+        with open("todos.txt" , "r") as file:
+            todo_list = file.readlines()
 
-        # add an item to the list
-        case "add" | "new" :
-            todo_input = input("enter a to-do: ") + "\n"
-            
-            with open("todos.txt" , "r") as file:
-                todo_list = file.readlines()
+        todo_list.append(todo_input + '\n')
 
-            todo_list.append(todo_input)
+        with open ("todos.txt" , "w") as file:
+            todo_list = file.writelines(todo_list)
+        
+    # view the list
+    elif user_action.startswith("view") or user_action.startswith("show"):
 
-            with open ("todos.txt" , "w") as file:
-                todo_list = file.writelines(todo_list)
-            
-        # view the list
-        case "view" | "show" | "display":
+        with open("todos.txt" , "r") as file:
+            todo_list = file.readlines()
 
-            with open("todos.txt" , "r") as file:
-                todo_list = file.readlines()
+        for index, item in enumerate(todo_list):
+            item = item.strip("\n")
+            row = f"{index+1}) {item.title()}"
+            print(row)
 
-            for index, item in enumerate(todo_list):
-                item = item.strip("\n")
-                row = f"{index+1}) {item.capitalize()}"
-                print(row)
-
-        # edit the list
-        case "edit":
-            number = int(input("number of to-do to edit: "))
+    # edit the list
+    elif user_action.startswith("edit"):
+        try:
+            number = int(user_action[5:])
             number = number - 1
 
             with open("todos.txt" , "r") as file:
@@ -42,10 +41,17 @@ while True:
 
             with open ("todos.txt" , "w") as file:
                 todo_list = file.writelines(todo_list)
+        except ValueError:
+            print("Enter the serial number of the task to be edited.")
+            continue
+        except IndexError:
+            print("That Index does not exist.")
+            continue
 
-        # complete a task
-        case "complete":
-            number = int(input("task to be marked as complete: "))
+    # complete a task
+    elif user_action.startswith("complete"):
+        try:
+            number = int(user_action[8:])
 
             with open("todos.txt" , "r") as file:
                 todo_list = file.readlines()
@@ -58,26 +64,34 @@ while True:
 
             completetion_message = f"the task: '{completed_todo}' was completed, and removed from list"
             print(completetion_message)
-            
-        # clearing the to-do list
-        case "clear all":
-            # Clear the in-memory list
-            todo_list.clear()
-    
-            # Clear the content of the file
-            with open("todos.txt", "w") as file:
-                file.truncate(0)
-    
-                print("To-do list cleared")
+        except ValueError:
+            print("Enter the serial number of the task to be completed.")
+            continue
+        except IndexError:
+            print("That Index does not exist.")
+            continue
 
-            with open("todos.txt" , "w") as file:
-                file.writelines(todo_list)
+    # clearing the to-do list
+    elif user_action.startswith("clear all"):
+        # Clear the in-memory list
+        todo_list.clear()
+        break
 
-        # exit the loop, completing the list
-        case "exit" | "finish":
-            break
-        
-        
-        # invalid commands
-        case _:
-            print("invalid request")
+        # Clear the content of the file
+        with open("todos.txt", "w") as file:
+            file.truncate(0)
+
+            print("To-do list cleared")
+
+        with open("todos.txt" , "w") as file:
+            file.writelines(todo_list)
+
+    # exit the loop, completing the list
+    elif user_action.startswith("exit"):
+        break
+    
+    # invalid commands
+    elif _:
+        print("invalid request")
+    else:
+        print("enter a valid command:")
