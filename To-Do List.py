@@ -1,3 +1,13 @@
+def getTodos(filepath):
+    with open(filepath, "r") as local_file:
+        local_todo_list = local_file.readlines()
+    return local_todo_list
+
+
+def writeTodos(filepath, todo_arg):
+    with open (filepath , "w") as file:
+        file.writelines(todo_arg)
+
 # user input loop
 while True:
     user_action = input("ADD an item, EDIT, VIEW, or COMPLETE an item your to-do list: ")
@@ -5,62 +15,71 @@ while True:
     user_action = user_action.lower()
 
     # add an item to the list
-    if "add" in user_action or "new" in user_action:
+    if user_action.startswith("add") or user_action.startswith("new"):
         todo_input = user_action[4:]
         
-        with open("todos.txt" , "r") as file:
-            todo_list = file.readlines()
+        todo_list = getTodos("todos.txt")
 
         todo_list.append(todo_input + '\n')
 
-        with open ("todos.txt" , "w") as file:
-            todo_list = file.writelines(todo_list)
+        writeTodos("todos.txt", todo_list)
         
     # view the list
-    elif "view" in user_action or "show" in user_action:
+    elif user_action.startswith("view") or user_action.startswith("show"):
 
-        with open("todos.txt" , "r") as file:
-            todo_list = file.readlines()
+        todo_list = getTodos("todos.txt")
 
         for index, item in enumerate(todo_list):
             item = item.strip("\n")
-            row = f"{index+1}) {item.capitalize()}"
+            row = f"{index+1}) {item.title()}"
             print(row)
 
     # edit the list
-    elif "edit" in user_action:
-        number = int(user_action[5:])
-        number = number - 1
+    elif user_action.startswith("edit"):
+        try:
+            editIndex = int(user_action[5:])
+            editIndex -= 1
 
-        with open("todos.txt" , "r") as file:
-            todo_list = file.readlines()
+            todo_list = getTodos("todos.txt")
 
             new_todo = input("enter new to-do: ")
-            todo_list[number] = new_todo + "\n"
+            todo_list[editIndex] = new_todo + "\n"
 
-        with open ("todos.txt" , "w") as file:
-            todo_list = file.writelines(todo_list)
+            writeTodos("todos.txt", todo_list)
+
+        except ValueError:
+            print("Enter the serial number of the task to be edited.")
+            continue
+        except IndexError:
+            print("That Index does not exist.")
+            continue
 
     # complete a task
-    elif "complete" in user_action:
-        number = int(user_action[8:])
+    elif user_action.startswith("complete"):
+        try:
+            completeIndex = int(user_action[8:])
 
-        with open("todos.txt" , "r") as file:
-            todo_list = file.readlines()
+            todo_list = getTodos("todos.txt")
 
-        completed_todo = todo_list[number-1].strip("\n")
-        todo_list.pop(number-1)
+            completed_todo = todo_list[completeIndex-1].strip("\n")
+            todo_list.pop(completeIndex-1)
 
-        with open ("todos.txt" , "w") as file:
-            file.writelines(todo_list)
+            writeTodos("todos.txt", todo_list)
 
-        completetion_message = f"the task: '{completed_todo}' was completed, and removed from list"
-        print(completetion_message)
-        
+            completetion_message = f"the task: '{completed_todo}' was completed, and removed from list"
+            print(completetion_message)
+        except ValueError:
+            print("Enter the serial number of the task to be completed.")
+            continue
+        except IndexError:
+            print("That Index does not exist.")
+            continue
+
     # clearing the to-do list
-    elif "clear all" in user_action:
+    elif user_action.startswith("clear all"):
         # Clear the in-memory list
         todo_list.clear()
+        break
 
         # Clear the content of the file
         with open("todos.txt", "w") as file:
@@ -68,11 +87,10 @@ while True:
 
             print("To-do list cleared")
 
-        with open("todos.txt" , "w") as file:
-            file.writelines(todo_list)
+        writeTodos("todos.txt", todo_list)
 
     # exit the loop, completing the list
-    elif "exit" in user_action:
+    elif user_action.startswith("exit"):
         break
     
     # invalid commands
