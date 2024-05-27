@@ -1,12 +1,4 @@
-def getTodos(filepath):
-    with open(filepath, "r") as local_file:
-        local_todo_list = local_file.readlines()
-    return local_todo_list
-
-
-def writeTodos(filepath, todo_arg):
-    with open (filepath , "w") as file:
-        file.writelines(todo_arg)
+import functions
 
 # user input loop
 while True:
@@ -18,16 +10,16 @@ while True:
     if user_action.startswith("add") or user_action.startswith("new"):
         todo_input = user_action[4:]
         
-        todo_list = getTodos("todos.txt")
+        todo_list = functions.getTodos()
 
         todo_list.append(todo_input + '\n')
 
-        writeTodos("todos.txt", todo_list)
+        functions.writeTodos(todo_list)
         
     # view the list
     elif user_action.startswith("view") or user_action.startswith("show"):
 
-        todo_list = getTodos("todos.txt")
+        todo_list = functions.getTodos()
 
         for index, item in enumerate(todo_list):
             item = item.strip("\n")
@@ -40,12 +32,12 @@ while True:
             editIndex = int(user_action[5:])
             editIndex -= 1
 
-            todo_list = getTodos("todos.txt")
+            todo_list = functions.getTodos()
 
             new_todo = input("enter new to-do: ")
             todo_list[editIndex] = new_todo + "\n"
 
-            writeTodos("todos.txt", todo_list)
+            functions.writeTodos(todo_list)
 
         except ValueError:
             print("Enter the serial number of the task to be edited.")
@@ -59,12 +51,12 @@ while True:
         try:
             completeIndex = int(user_action[8:])
 
-            todo_list = getTodos("todos.txt")
+            todo_list = functions.getTodos()
 
             completed_todo = todo_list[completeIndex-1].strip("\n")
             todo_list.pop(completeIndex-1)
 
-            writeTodos("todos.txt", todo_list)
+            functions.writeTodos(todo_list)
 
             completetion_message = f"the task: '{completed_todo}' was completed, and removed from list"
             print(completetion_message)
@@ -87,7 +79,7 @@ while True:
 
             print("To-do list cleared")
 
-        writeTodos("todos.txt", todo_list)
+        functions.writeTodos(todo_list)
 
     # exit the loop, completing the list
     elif user_action.startswith("exit"):
